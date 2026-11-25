@@ -1,0 +1,75 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Mohammed Arif · Tech Stack</title>
+<style>
+  :root { --bg:#0B1630; --card:#12213f; --text:#96AAC8; --green:#3DDC97; --gold:#F5B942; }
+  * { box-sizing: border-box; }
+  body {
+    margin:0; min-height:100vh; background:var(--bg); color:var(--text);
+    font-family:"Fira Code", ui-monospace, monospace;
+    display:flex; flex-direction:column; align-items:center; padding:48px 16px;
+  }
+  h1 { color:var(--gold); font-size:1.3rem; font-weight:600; margin:0 0 32px; }
+  .stack { display:flex; flex-wrap:wrap; justify-content:center; gap:20px; max-width:820px; }
+  .tile {
+    --c: var(--green);
+    width:76px; height:76px; border-radius:18px; background:var(--card);
+    display:grid; place-items:center; position:relative; cursor:pointer;
+    transition: transform .25s cubic-bezier(.2,.9,.3,1.4), box-shadow .25s;
+    will-change: transform;
+  }
+  .tile img { width:44px; height:44px; pointer-events:none; transition: transform .25s; }
+  .tile:hover, .tile:focus-visible {
+    transform: translateY(-14px) scale(1.25) rotate(var(--tilt,0deg));
+    box-shadow: 0 18px 30px -8px var(--c), 0 0 0 2px var(--c);
+    z-index:2; outline:none;
+  }
+  .tile:hover img { transform: scale(1.1); }
+  .tile span {
+    position:absolute; bottom:-26px; font-size:.7rem; color:var(--green);
+    opacity:0; transition:opacity .2s; white-space:nowrap;
+  }
+  .tile:hover span, .tile:focus-visible span { opacity:1; }
+  /* Idle float, staggered; stops when hovered */
+  @media (prefers-reduced-motion: no-preference) {
+    .tile { animation: float 3.2s ease-in-out infinite; animation-delay: var(--d,0s); }
+    .tile:hover { animation-play-state: paused; }
+  }
+  @keyframes float { 50% { translate: 0 -6px; } }
+</style>
+</head>
+<body>
+<h1>$ cat tech_stack.txt</h1>
+<div class="stack" id="stack"></div>
+
+<script>
+  const techs = ["java","js","ts","nodejs","express","react","spring","cpp","go","python","html","css",
+                 "mysql","mongodb","postgres","redis","docker","git","linux","arduino","aws"];
+  const names = {js:"JavaScript",ts:"TypeScript",nodejs:"Node.js",cpp:"C++",postgres:"PostgreSQL",
+                 mongodb:"MongoDB",mysql:"MySQL",aws:"AWS",html:"HTML",css:"CSS"};
+  const stack = document.getElementById("stack");
+
+  techs.forEach((t, i) => {
+    const el = document.createElement("div");
+    el.className = "tile";
+    el.tabIndex = 0;
+    el.style.setProperty("--d", (i * 0.15) + "s");
+    el.style.setProperty("--tilt", (i % 2 ? 6 : -6) + "deg");
+    el.innerHTML = `<img src="https://skillicons.dev/icons?i=${t}" alt="${names[t] || t}"><span>${names[t] || t[0].toUpperCase() + t.slice(1)}</span>`;
+
+    // Magnetic follow: tile leans toward the cursor
+    el.addEventListener("mousemove", e => {
+      const r = el.getBoundingClientRect();
+      const x = (e.clientX - r.left - r.width / 2) / 4;
+      const y = (e.clientY - r.top - r.height / 2) / 4;
+      el.style.transform = `translate(${x}px, ${y - 14}px) scale(1.25) rotate(${el.style.getPropertyValue("--tilt")})`;
+    });
+    el.addEventListener("mouseleave", () => el.style.transform = "");
+    stack.appendChild(el);
+  });
+</script>
+</body>
+</html>
